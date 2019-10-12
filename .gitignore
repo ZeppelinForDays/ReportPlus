@@ -1,0 +1,9 @@
+
+.classpath
+*.xml
+.project
+*.prefs
+*.class
+bin/plugin.yml
+NextReleaseNotes.txt
+ReportPlusPlugin.iml
