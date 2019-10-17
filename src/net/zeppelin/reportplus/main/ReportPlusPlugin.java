@@ -2,10 +2,15 @@ package net.zeppelin.reportplus.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import net.zeppelin.reportplus.commands.BaseCommand;
+import net.zeppelin.reportplus.commands.SubCommand;
 import net.zeppelin.reportplus.commands.impl.OpenReportsCommand;
 import net.zeppelin.reportplus.commands.impl.ReportCommand;
+import net.zeppelin.reportplus.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -22,7 +27,7 @@ import net.zeppelin.reportplus.reports.Report;
 import net.zeppelin.reportplus.reports.ReportHandler;
 import net.zeppelin.reportplus.utils.InventoryHandler;
 
-public class ReportPlusPlugin extends JavaPlugin
+public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 {
 	public static final String PREFIX = "§7[§6§lReport§8Plus§7] §r";
 
@@ -39,6 +44,8 @@ public class ReportPlusPlugin extends JavaPlugin
 
 	public static boolean LIMIT_REPORTS;
 	public static int REPORT_LIMIT;
+
+	private List<BaseCommand> commands = new ArrayList<>();
 
 	/*
 	 * Permissions:
@@ -137,15 +144,8 @@ public class ReportPlusPlugin extends JavaPlugin
 		getServer().getPluginManager().registerEvents(inventoryHandler, this);
 
 		// Commands
-		OpenReportsCommand openReportsCommand = new OpenReportsCommand(reportHandler, inventoryHandler);
-		ReportCommand reportCommand = new ReportCommand(playerHandler, reportHandler, inventoryHandler);
-
-		getCommand(openReportsCommand.getName()).setExecutor(openReportsCommand);
-		getCommand(reportCommand.getName()).setExecutor(reportCommand);
-
-		// Register Commands
-//		getCommand("report").setExecutor(this);
-//		getCommand("reports").setExecutor(this);
+		registerCommand(new OpenReportsCommand(reportHandler, inventoryHandler));
+		registerCommand(new ReportCommand(playerHandler, reportHandler, inventoryHandler));
 	}
 
 	@Override
@@ -213,6 +213,50 @@ public class ReportPlusPlugin extends JavaPlugin
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "" + totalReportsSaved + " report(s) has been saved successfully, took " + elapsedTime + "ms.");
 	}
 
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+	{
+		sender.sendMessage(commands.size() + "");
+
+		for (BaseCommand baseCommand : commands)
+		{
+			if (command.getName().equalsIgnoreCase(baseCommand.getName()))
+			{
+				// Check if sender has permissions to run this command.
+				if (baseCommand.getPermissionNode() != null)
+					if (!sender.hasPermission(baseCommand.getPermissionNode()))
+					{
+						sender.sendMessage(Messages.INVALID_PERMISSION);
+						return false;
+					}
+
+				if (args.length > 0)
+				{
+					for (SubCommand subCommand : baseCommand.getSubCommands())
+					{
+						if (args[0].equalsIgnoreCase(subCommand.getName()))
+						{
+							// Check permission for sub-command.
+							if (subCommand.getPermissionNode() != null)
+								if (!sender.hasPermission(subCommand.getPermissionNode()))
+								{
+									sender.sendMessage(Messages.INVALID_PERMISSION);
+									return false;
+								}
+
+							subCommand.execute(sender, args);
+							return false;
+						}
+					}
+				}
+
+				baseCommand.execute(sender, args);
+			}
+		}
+
+		return false;
+	}
+
 	public void saveReportsConfig()
 	{
 		try
@@ -233,5 +277,11 @@ public class ReportPlusPlugin extends JavaPlugin
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public void registerCommand(BaseCommand command)
+	{
+		this.commands.add(command);
+		getCommand(command.getName()).setExecutor(this);
 	}
 }

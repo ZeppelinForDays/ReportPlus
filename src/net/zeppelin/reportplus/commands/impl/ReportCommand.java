@@ -1,6 +1,6 @@
 package net.zeppelin.reportplus.commands.impl;
 
-import net.zeppelin.reportplus.commands.CustomCommand;
+import net.zeppelin.reportplus.commands.BaseCommand;
 import net.zeppelin.reportplus.main.ReportPlusPlugin;
 import net.zeppelin.reportplus.player.PlayerHandler;
 import net.zeppelin.reportplus.player.ReportPlayer;
@@ -13,7 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class ReportCommand extends CustomCommand
+public class ReportCommand extends BaseCommand
 {
     private PlayerHandler playerHandler;
     private ReportHandler reportHandler;
