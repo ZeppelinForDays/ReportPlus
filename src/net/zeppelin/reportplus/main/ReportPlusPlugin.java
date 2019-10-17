@@ -13,6 +13,7 @@ import net.zeppelin.reportplus.commands.impl.ReportCommand;
 import net.zeppelin.reportplus.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -91,23 +92,19 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 			String targetIdString = reportsConfig.getString(counter + ".target");
 			String reason = reportsConfig.getString(counter + ".reason");
 
-			if (reporterIdString != null && targetIdString != null && reason != null)
-			{
-				Player reporter = Bukkit.getPlayer(UUID.fromString(reporterIdString));
-				Player target = Bukkit.getPlayer(UUID.fromString(targetIdString));
+			if (reporterIdString == null || targetIdString == null || reason == null) break;
 
-				if (reporter != null && target != null)
-				{
-					ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
-					ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
+			OfflinePlayer reporter = Bukkit.getOfflinePlayer(UUID.fromString(reporterIdString));
+			OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(targetIdString));
 
-					Report report = new Report(reportPlayer, targetPlayer, reason);
-					reportHandler.addActiveReport(report);
+			ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
+			ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
 
-					totalReportsLoaded++;
-					counter++;
-				}
-			}
+			Report report = new Report(reportPlayer, targetPlayer, reason);
+			reportHandler.addActiveReport(report);
+
+			totalReportsLoaded++;
+			counter++;
 		}
 
 		// Load archived reports
@@ -118,23 +115,19 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 			String targetIdString = archiveConfig.getString(counter + ".target");
 			String reason = archiveConfig.getString(counter + ".reason");
 
-			if (reporterIdString != null && targetIdString != null && reason != null)
-			{
-				Player reporter = Bukkit.getPlayer(UUID.fromString(reporterIdString));
-				Player target = Bukkit.getPlayer(UUID.fromString(targetIdString));
+			if (reporterIdString == null || targetIdString == null || reason == null) break;
 
-				if (reporter != null && target != null)
-				{
-					ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
-					ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
+			OfflinePlayer reporter = Bukkit.getOfflinePlayer(UUID.fromString(reporterIdString));
+			OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(targetIdString));
 
-					Report report = new Report(reportPlayer, targetPlayer, reason);
-					reportHandler.addArchivedReport(report);
+			ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
+			ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
 
-					totalReportsLoaded++;
-					counter++;
-				}
-			}
+			Report report = new Report(reportPlayer, targetPlayer, reason);
+			reportHandler.addArchivedReport(report);
+
+			totalReportsLoaded++;
+			counter++;
 		}
 		int elapsedTime = (int) (System.currentTimeMillis() - startTime);
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "" + totalReportsLoaded + " report(s) has been loaded successfully, took " + elapsedTime + "ms.");
