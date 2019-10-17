@@ -2,11 +2,40 @@ package net.zeppelin.reportplus.reports;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ReportHandler
 {
-	private List<Report> activeReports = new ArrayList<Report>();
-	private List<Report> archivedReports = new ArrayList<Report>();
+	private List<Report> activeReports = new ArrayList<>();
+	private List<Report> archivedReports = new ArrayList<>();
+
+	public int getReportsCreatedForPlayer(UUID id)
+	{
+		int numberReports = 0;
+		for (Report tempReport : activeReports)
+		{
+			if (tempReport.getReportPlayer().getUniqueId().equals(id))
+			{
+				numberReports++;
+			}
+		}
+
+		return numberReports;
+	}
+
+	public int getReportsAgainstPlayer(UUID id)
+	{
+		int numberReports = 0;
+		for (Report tempReport : activeReports)
+		{
+			if (tempReport.getTargetPlayer().getUniqueId().equals(id))
+			{
+				numberReports++;
+			}
+		}
+
+		return numberReports;
+	}
 
 	public void addActiveReport(Report report)
 	{

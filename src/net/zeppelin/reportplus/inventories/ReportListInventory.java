@@ -3,6 +3,7 @@ package net.zeppelin.reportplus.inventories;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.zeppelin.reportplus.player.PlayerHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,102 +22,106 @@ import net.zeppelin.reportplus.utils.Messages;
 @SuppressWarnings("deprecation")
 public class ReportListInventory extends ReportInventory
 {
-	private ReportHandler reportHandler;
-	private int type;
-	
-	public static final int ACTIVE_REPORTS = 0;
-	public static final int ARCHIVED_REPORTS = 1;
+    private ReportHandler reportHandler;
+    private int type;
 
-	public ReportListInventory(InventoryHandler inventoryHandler, int id, ReportHandler reportHandler)
-	{
-		super(inventoryHandler, id, true);
-		this.reportHandler = reportHandler;
-	}
+    public static final int ACTIVE_REPORTS = 0;
+    public static final int ARCHIVED_REPORTS = 1;
 
-	@Override
-	public void loadContents()
-	{
-		// Prepare before inventory
-		List<Report> reports = new ArrayList<Report>();
-		String inventoryName = "";
+    public ReportListInventory(InventoryHandler inventoryHandler, int id, ReportHandler reportHandler)
+    {
+        super(inventoryHandler, id, true);
+        this.reportHandler = reportHandler;
+    }
 
-		if (type == ACTIVE_REPORTS)
-		{
-			reports = reportHandler.getActiveReports();
-			inventoryName = "Active Reports";
-		} else if (type == ARCHIVED_REPORTS)
-		{
-			reports = reportHandler.getArchivedReports();
-			inventoryName = "Archived Reports";
-		}
+    @Override
+    public void loadContents()
+    {
+        // Prepare before inventory
+        List<Report> reports = new ArrayList<Report>();
+        String inventoryName = "";
 
-		inventory = Bukkit.createInventory(null, 54, inventoryName);
-		
-		// Load inventory
-		for (int i = 0; i < reports.size(); i++)
-		{
-			// Makes sure the list of reports don't override any menu options.
-			if (i >= 45) break;
+        if (type == ACTIVE_REPORTS)
+        {
+            reports = reportHandler.getActiveReports();
+            inventoryName = "Active Reports";
+        } else if (type == ARCHIVED_REPORTS)
+        {
+            reports = reportHandler.getArchivedReports();
+            inventoryName = "Archived Reports";
+        }
 
-			Report tempReport = reports.get(i);
-			String reporterName = tempReport.getReportPlayer().getHandler().getName();
-			String targetPlayerName = tempReport.getTargetPlayer().getHandler().getName();
+        inventory = Bukkit.createInventory(null, 54, inventoryName);
 
-			List<String> lore = new ArrayList<String>();
-			lore.add("§6Reported By: §7" + reporterName);
-			lore.add("§6Reason: §7" + tempReport.getReason());
-			if (type == ACTIVE_REPORTS)
-			{
-				if (tempReport.isClaimed())
-				{
-					String claimerName = tempReport.getClaimer().getHandler().getName();
-					lore.add("");
-					lore.add(ChatColor.GREEN + claimerName + " is handling this report.");
-				}
-			}
-			ItemStack item = new ItemStack(Bukkit.getVersion().contains("1.14") ? Material.valueOf("PLAYER_HEAD") : Material.valueOf("SKULL_ITEM"));
-			if (!Bukkit.getVersion().contains("1.14"))
-			{
-				item = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (byte) SkullType.PLAYER.ordinal());
-			}
-			SkullMeta skullMeta = (SkullMeta) item.getItemMeta();
-			skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(tempReport.getTargetPlayer().getUniqueId()));
-			item.setItemMeta(skullMeta);
-			inventory.setItem(i, ItemUtils.createItem(item, ChatColor.RED + targetPlayerName, lore));
-		}
+        // Load inventory
+        for (int i = 0; i < reports.size(); i++)
+        {
+            // Makes sure the list of reports don't override any menu options.
+            if (i >= 45) break;
+
+            Report tempReport = reports.get(i);
+            String reporterName = tempReport.getReportPlayer().getName();
+            String targetPlayerName = tempReport.getTargetPlayer().getName();
+
+            List<String> lore = new ArrayList<String>();
+            lore.add("§6Reported By: §7" + reporterName);
+            lore.add("§6Reason: §7" + tempReport.getReason());
+            if (type == ACTIVE_REPORTS)
+            {
+                if (tempReport.isClaimed())
+                {
+                    String claimerName = tempReport.getClaimer().getName();
+                    lore.add("");
+                    lore.add(ChatColor.GREEN + claimerName + " is handling this report.");
+                }
+            }
+            ItemStack item = new ItemStack(Bukkit.getVersion().contains("1.14") ? Material.valueOf("PLAYER_HEAD") : Material.valueOf("SKULL_ITEM"));
+            if (!Bukkit.getVersion().contains("1.14"))
+            {
+                item = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (byte) SkullType.PLAYER.ordinal());
+            }
+            SkullMeta skullMeta = (SkullMeta) item.getItemMeta();
+            skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(tempReport.getTargetPlayer().getUniqueId()));
+            item.setItemMeta(skullMeta);
+            inventory.setItem(i, ItemUtils.createItem(item, ChatColor.RED + targetPlayerName, lore));
+        }
 		inventory.setItem(45, ItemUtils.createItem(Material.ARROW, ChatColor.RED + "Back", null));
-	}
+		inventory.setItem(49, ItemUtils.createItem(Material.PAPER, ChatColor.GREEN + "Refresh", null));
+    }
 
-	@Override
-	public void onInventoryClickEvent(InventoryClickEvent event)
-	{
-		Player player = (Player) event.getWhoClicked();
-		int slot = event.getSlot();
+    @Override
+    public void onInventoryClickEvent(InventoryClickEvent event)
+    {
+        Player player = (Player) event.getWhoClicked();
+        int slot = event.getSlot();
 
-		if (!player.hasPermission("reportplus.reports.manage"))
-		{
-			player.sendMessage(Messages.INVALID_PERMISSION);
-			player.closeInventory();
-			return;
-		}
+        if (!player.hasPermission("reportplus.reports.manage"))
+        {
+            player.sendMessage(Messages.INVALID_PERMISSION);
+            player.closeInventory();
+            return;
+        }
 
-		if (slot == 45)
-		{
-			inventoryHandler.getMainInventory().openInventory(player);
-			return;
-		}
+        if (slot == 45)
+        {
+            inventoryHandler.getMainInventory().openInventory(player);
+            return;
+        } else if (slot == 49)
+        {
+        	openInventory(player, type);
+        }
 
-		if (type == ACTIVE_REPORTS)
-			if (slot < reportHandler.getActiveReports().size() && slot >= 0 && slot <= 44)
-			{
-				Report clickedReport = reportHandler.getActiveReports().get(slot);
-				inventoryHandler.getClickedReportInventory().openInventoryFromReport(player, clickedReport);
-			}
-	}
+        if (type == ACTIVE_REPORTS)
+            if (slot < reportHandler.getActiveReports().size() && slot >= 0 && slot <= 44)
+            {
+                Report clickedReport = reportHandler.getActiveReports().get(slot);
+                inventoryHandler.getClickedReportInventory().openInventoryFromReport(player, clickedReport);
+            }
+    }
 
-	public void openInventory(Player player, int type)
-	{
-		this.type = type;
-		super.openInventory(player);
-	}
+    public void openInventory(Player player, int type)
+    {
+        this.type = type;
+        super.openInventory(player);
+    }
 }

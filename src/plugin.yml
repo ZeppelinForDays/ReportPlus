@@ -1,11 +1,13 @@
 main: net.zeppelin.reportplus.main.ReportPlusPlugin
 name: ReportPlus
-version: "1.2.3"
+version: "1.2.5"
 api-version: "1.13"
 description: "Reporting system with GUI capability."
 author: ZeppelinForDays
 commands:
   report:
+    description: Opens the main GUI.
+  report <player> <reason>:
     description: Reports the given player.
   report removeall <player>:
     description: Removes all reports from a target player.

@@ -12,4 +12,6 @@ public class Messages
 	public static final String REPORT_SELF = ChatColor.RED + "You cannot report yourself.";
 	public static final String PLAYER_KICKED = ChatColor.RED + "You have been kicked from this server.";
 	public static final String PLAYER_BANNED = ChatColor.RED + "You have been banned from this server.";
+	public static final String REPORT_LIMIT = ChatColor.RED + "You have reached the limit of reports you can create.";
+	public static final String INVALID_ARGUMENTS = ChatColor.RED + "Invalid arguments.";
 }

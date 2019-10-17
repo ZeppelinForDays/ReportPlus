@@ -1,0 +1,3 @@
+# Set to true if you want players to have a limit to how many reports they can make.
+limitReports: false
+reportLimit: 5

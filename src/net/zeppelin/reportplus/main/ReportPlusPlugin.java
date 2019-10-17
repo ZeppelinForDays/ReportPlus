@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import net.zeppelin.reportplus.commands.impl.OpenReportsCommand;
+import net.zeppelin.reportplus.commands.impl.ReportCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -14,15 +16,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import net.zeppelin.reportplus.inventories.ReportListInventory;
 import net.zeppelin.reportplus.player.PlayerHandler;
 import net.zeppelin.reportplus.player.ReportPlayer;
 import net.zeppelin.reportplus.reports.Report;
 import net.zeppelin.reportplus.reports.ReportHandler;
 import net.zeppelin.reportplus.utils.InventoryHandler;
-import net.zeppelin.reportplus.utils.Messages;
 
-public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
+public class ReportPlusPlugin extends JavaPlugin
 {
 	public static final String PREFIX = "§7[§6§lReport§8Plus§7] §r";
 
@@ -37,6 +37,9 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 	private FileConfiguration reportsConfig;
 	private FileConfiguration archiveConfig;
 
+	public static boolean LIMIT_REPORTS;
+	public static int REPORT_LIMIT;
+
 	/*
 	 * Permissions:
 	 *
@@ -47,7 +50,7 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 	 * - reportplus.reports.claim: Allows a player to claim a report.
 	 * - reportplus.reports.archive: Allows a player to archive a report.
 	 * - reportplus.players.manage: Allows a player to access the player options menu.
-	 * - reportplus.notify.receive
+	 * - reportplus.notify.receive: Allows a player to be notified when a new report is created.
 	 */
 
 	@Override
@@ -65,6 +68,11 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 		this.reportsConfig = YamlConfiguration.loadConfiguration(reportsFile);
 		this.archiveConfig = YamlConfiguration.loadConfiguration(archiveFile);
 
+		this.getConfig().options().copyDefaults(true);
+		LIMIT_REPORTS = getConfig().getBoolean("limitReports");
+		REPORT_LIMIT = getConfig().getInt("reportLimit");
+		this.saveConfig();
+
 		// Load reports from configuration file.
 		long startTime = System.currentTimeMillis();
 		// Load active reports
@@ -72,42 +80,54 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 		int counter = 0;
 		while (reportsConfig.getString(String.valueOf(counter)) != null)
 		{
-			String reporter = reportsConfig.getString(counter + ".reporter");
-			String target = reportsConfig.getString(counter + ".target");
+			String reporterIdString = reportsConfig.getString(counter + ".reporter");
+			String targetIdString = reportsConfig.getString(counter + ".target");
 			String reason = reportsConfig.getString(counter + ".reason");
 
-			UUID reporterId = UUID.fromString(reporter);
-			UUID targetId = UUID.fromString(target);
+			if (reporterIdString != null && targetIdString != null && reason != null)
+			{
+				Player reporter = Bukkit.getPlayer(UUID.fromString(reporterIdString));
+				Player target = Bukkit.getPlayer(UUID.fromString(targetIdString));
 
-			ReportPlayer reportPlayer = new ReportPlayer(reporterId);
-			ReportPlayer targetPlayer = new ReportPlayer(targetId);
+				if (reporter != null && target != null)
+				{
+					ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
+					ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
 
-			Report report = new Report(reportPlayer, targetPlayer, reason);
-			reportHandler.addActiveReport(report);
+					Report report = new Report(reportPlayer, targetPlayer, reason);
+					reportHandler.addActiveReport(report);
 
-			totalReportsLoaded++;
-			counter++;
+					totalReportsLoaded++;
+					counter++;
+				}
+			}
 		}
 
 		// Load archived reports
 		counter = 0;
 		while (archiveConfig.getString(String.valueOf(counter)) != null)
 		{
-			String reporter = archiveConfig.getString(counter + ".reporter");
-			String target = archiveConfig.getString(counter + ".target");
+			String reporterIdString = archiveConfig.getString(counter + ".reporter");
+			String targetIdString = archiveConfig.getString(counter + ".target");
 			String reason = archiveConfig.getString(counter + ".reason");
 
-			UUID reporterId = UUID.fromString(reporter);
-			UUID targetId = UUID.fromString(target);
+			if (reporterIdString != null && targetIdString != null && reason != null)
+			{
+				Player reporter = Bukkit.getPlayer(UUID.fromString(reporterIdString));
+				Player target = Bukkit.getPlayer(UUID.fromString(targetIdString));
 
-			ReportPlayer reportPlayer = new ReportPlayer(reporterId);
-			ReportPlayer targetPlayer = new ReportPlayer(targetId);
+				if (reporter != null && target != null)
+				{
+					ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
+					ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
 
-			Report report = new Report(reportPlayer, targetPlayer, reason);
-			reportHandler.addArchivedReport(report);
+					Report report = new Report(reportPlayer, targetPlayer, reason);
+					reportHandler.addArchivedReport(report);
 
-			totalReportsLoaded++;
-			counter++;
+					totalReportsLoaded++;
+					counter++;
+				}
+			}
 		}
 		int elapsedTime = (int) (System.currentTimeMillis() - startTime);
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "" + totalReportsLoaded + " report(s) has been loaded successfully, took " + elapsedTime + "ms.");
@@ -116,9 +136,16 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 		getServer().getPluginManager().registerEvents(playerHandler, this);
 		getServer().getPluginManager().registerEvents(inventoryHandler, this);
 
-		// Register commands
-		getCommand("report").setExecutor(this);
-		getCommand("reports").setExecutor(this);
+		// Commands
+		OpenReportsCommand openReportsCommand = new OpenReportsCommand(reportHandler, inventoryHandler);
+		ReportCommand reportCommand = new ReportCommand(playerHandler, reportHandler, inventoryHandler);
+
+		getCommand(openReportsCommand.getName()).setExecutor(openReportsCommand);
+		getCommand(reportCommand.getName()).setExecutor(reportCommand);
+
+		// Register Commands
+//		getCommand("report").setExecutor(this);
+//		getCommand("reports").setExecutor(this);
 	}
 
 	@Override
@@ -184,151 +211,6 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 		saveArchiveConfig();
 		int elapsedTime = (int) (System.currentTimeMillis() - startTime);
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "" + totalReportsSaved + " report(s) has been saved successfully, took " + elapsedTime + "ms.");
-	}
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
-		if (!(sender instanceof Player))
-		{
-			sender.sendMessage(Messages.INVALID_SENDER);
-			return false;
-		}
-
-		Player player = (Player) sender;
-		ReportPlayer reportPlayer = playerHandler.getReportPlayerFromId(player.getUniqueId());
-
-		if (command.getName().equalsIgnoreCase("report"))
-		{
-			if (args.length <= 0)
-			{
-				// Checks permission
-				if (!player.hasPermission("reportplus.reports.manage"))
-				{
-					player.sendMessage(Messages.INVALID_PERMISSION);
-					return false;
-				}
-
-				// Opens report inventory
-				inventoryHandler.getMainInventory().openInventory(player);
-			} else if (args.length >= 2)
-			{
-				if (args[0].equalsIgnoreCase("removeall"))
-				{ // removeall command
-					// Checks permission
-					if (!player.hasPermission("reportplus.reports.remove"))
-					{
-						player.sendMessage(Messages.INVALID_PERMISSION);
-						return false;
-					}
-
-					// Delete reports for target player
-					Player target = Bukkit.getPlayer(args[1]);
-
-					if (target != null)
-					{
-						int deleteCounter = 0;
-						for (int i = 0; i < reportHandler.getActiveReports().size(); i++)
-						{
-							Report tempReport = reportHandler.getActiveReports().get(i);
-
-							if (tempReport.getTargetPlayer().getUniqueId().equals(target.getUniqueId()))
-							{
-								reportHandler.removeActiveReport(tempReport);
-								i--;
-								deleteCounter++;
-							}
-						}
-
-						// Check number of reports that was removed if any
-						if (deleteCounter > 0)
-						{
-							// Inform the sender of the reports removed
-							player.sendMessage("§6" + deleteCounter + "§7 report(s) has been removed for §6" + target.getName());
-							return false;
-						} else
-						{
-							// No reports for this user
-							player.sendMessage(Messages.INVALID_TARGET_REPORT);
-							return false;
-						}
-					} else
-					{
-						// Could not find player
-						player.sendMessage(ChatColor.RED + "Could not find player: " + args[1]);
-						return false;
-					}
-				}
-
-				// Checks permission
-				if (!player.hasPermission("reportplus.report"))
-				{
-					player.sendMessage(Messages.INVALID_PERMISSION);
-					return false;
-				}
-
-				// Continue reporting command
-				Player target = Bukkit.getPlayer(args[0]);
-
-				if (target != null)
-				{
-					ReportPlayer targetPlayer = playerHandler.getReportPlayerFromId(target.getUniqueId());
-					String reason = "";
-
-					// Check if player is reporting themselves.
-					if (target.getUniqueId().equals(player.getUniqueId()))
-					{
-						player.sendMessage(Messages.REPORT_SELF);
-						return false;
-					}
-
-					// Convert args to a String
-					for (int i = 1; i < args.length; i++)
-					{
-						if (i == args.length - 1)
-						{
-							reason += args[i];
-							break;
-						}
-						reason += args[i] + " ";
-					}
-
-					// Create report
-					Report report = new Report(reportPlayer, targetPlayer, reason);
-					reportHandler.addActiveReport(report);
-					player.sendMessage("§7You have reported §6" + target.getName() + "§7 for §6" + reason);
-					for (Player online : Bukkit.getOnlinePlayers())
-					{
-						if (online.hasPermission("reportplus.notify.receive"))
-							online.sendMessage(ReportPlusPlugin.PREFIX + "§6" + target.getName() + "§7 has been reported by §6" + player.getName() + "§7 for §6" + reason);
-					}
-				} else
-				{
-					// Invalid player.
-					player.sendMessage(ChatColor.RED + "Could not find player: " + args[0]);
-					return false;
-				}
-			}
-		} else if (command.getName().equalsIgnoreCase("reports"))
-		{
-			// Checks permission
-			if (!player.hasPermission("reportplus.reports.view"))
-			{
-				player.sendMessage(Messages.INVALID_PERMISSION);
-				return false;
-			}
-
-			// Opens active reports inventory
-			if (reportHandler.getActiveReports().size() != 0)
-				inventoryHandler.getReportListInventory().openInventory(player, ReportListInventory.ACTIVE_REPORTS);
-			else
-			{
-				player.sendMessage(Messages.CURRENTLY_NO_REPORTS);
-				return false;
-			}
-		}
-
-		return false;
 	}
 
 	public void saveReportsConfig()

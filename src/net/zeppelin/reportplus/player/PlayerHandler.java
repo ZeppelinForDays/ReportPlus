@@ -13,57 +13,57 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerHandler implements Listener
 {
-	private Map<UUID, ReportPlayer> players = new HashMap<UUID, ReportPlayer>();
+    private Map<UUID, ReportPlayer> players = new HashMap<>();
 
-	public PlayerHandler()
-	{
-		for (Player player : Bukkit.getOnlinePlayers())
-		{
-			if (!players.containsKey(player.getUniqueId()))
-			{
-				addPlayer(player.getUniqueId());
-			}
-		}
-	}
+    public PlayerHandler()
+    {
+        for (Player player : Bukkit.getOnlinePlayers())
+        {
+            if (!players.containsKey(player.getUniqueId()))
+            {
+                addPlayer(player);
+            }
+        }
+    }
 
-	public ReportPlayer getReportPlayerFromId(UUID id)
-	{
-		if (players.containsKey(id))
-		{
-			return players.get(id);
-		}
-		return null;
-	}
+    public ReportPlayer getReportPlayerFromId(UUID id)
+    {
+        if (players.containsKey(id))
+        {
+            return players.get(id);
+        }
+        return null;
+    }
 
-	public void addPlayer(UUID uniqueId)
-	{
-		players.put(uniqueId, new ReportPlayer(uniqueId));
-	}
+    public void addPlayer(Player player)
+    {
+        players.put(player.getUniqueId(), new ReportPlayer(player.getUniqueId(), player.getName()));
+    }
 
-	public void removePlayer(UUID uniqueId)
-	{
-		players.remove(uniqueId);
-	}
+    public void removePlayer(Player player)
+    {
+        players.remove(player.getUniqueId());
+    }
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event)
-	{
-		Player player = event.getPlayer();
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        Player player = event.getPlayer();
 
-		if (!players.containsKey(player.getUniqueId()))
-		{
-			addPlayer(player.getUniqueId());
-		}
-	}
+        if (!players.containsKey(player.getUniqueId()))
+        {
+            addPlayer(player);
+        }
+    }
 
-	@EventHandler
-	public void onPlayerLeave(PlayerQuitEvent event)
-	{
-		Player player = event.getPlayer();
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent event)
+    {
+        Player player = event.getPlayer();
 
-		if (players.containsKey(player.getUniqueId()))
-		{
-			removePlayer(player.getUniqueId());
-		}
-	}
+        if (players.containsKey(player.getUniqueId()))
+        {
+            removePlayer(player);
+        }
+    }
 }
