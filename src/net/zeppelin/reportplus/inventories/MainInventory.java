@@ -41,7 +41,7 @@ public class MainInventory extends ReportInventory
 		{
 			item = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (byte) SkullType.PLAYER.ordinal());
 		}
-		inventory.setItem(14, ItemUtils.createItem(item, "§aActive Reports", Arrays.asList("§7View and manage all active reports.")));
+		inventory.setItem(14, ItemUtils.createItem(item, "§aActive Reports", Collections.singletonList("§7View and manage all active reports.")));
 		inventory.setItem(18, ItemUtils.createItem(Material.ARROW, ChatColor.RED + "Exit", null));
 	}
 

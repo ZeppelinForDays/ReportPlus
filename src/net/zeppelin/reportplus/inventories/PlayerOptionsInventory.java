@@ -1,17 +1,15 @@
 package net.zeppelin.reportplus.inventories;
 
-import java.util.Arrays;
-import java.util.Collections;
-
+import net.zeppelin.reportplus.reports.Report;
+import net.zeppelin.reportplus.utils.InventoryHandler;
+import net.zeppelin.reportplus.utils.ItemUtils;
+import net.zeppelin.reportplus.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import net.zeppelin.reportplus.reports.Report;
-import net.zeppelin.reportplus.utils.InventoryHandler;
-import net.zeppelin.reportplus.utils.ItemUtils;
-import net.zeppelin.reportplus.utils.Messages;
+import java.util.Collections;
 
 public class PlayerOptionsInventory extends ReportInventory
 {
@@ -29,9 +27,9 @@ public class PlayerOptionsInventory extends ReportInventory
 		
 		inventory = Bukkit.createInventory(null, 27, "Player Options");
 
-		inventory.setItem(11, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§cBan Player IP", Collections.singletonList("§7Ban this player from joining your server again.")));
-		inventory.setItem(13, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§cKick Player", Collections.singletonList("§7Kick this player from the server.")));
-		inventory.setItem(15, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§aTeleport", Collections.singletonList("§7Teleport to this player.")));
+		inventory.setItem(11, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§cBan Player IP", Collections.singletonList("§7Ban reported player from joining your server again.")));
+		inventory.setItem(13, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§cKick Player", Collections.singletonList("§7Kick the reported player from the server.")));
+		inventory.setItem(15, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§aTeleport", Collections.singletonList("§7Teleport to the reported player.")));
 		inventory.setItem(18, ItemUtils.createItem(Material.ARROW, "§cBack", null));
 	}
 

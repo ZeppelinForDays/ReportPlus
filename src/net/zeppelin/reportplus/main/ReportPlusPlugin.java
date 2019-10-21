@@ -1,15 +1,15 @@
 package net.zeppelin.reportplus.main;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import net.minecraft.server.v1_14_R1.Vector3f;
 import net.zeppelin.reportplus.commands.BaseCommand;
 import net.zeppelin.reportplus.commands.SubCommand;
 import net.zeppelin.reportplus.commands.impl.OpenReportsCommand;
 import net.zeppelin.reportplus.commands.impl.ReportCommand;
+import net.zeppelin.reportplus.player.PlayerHandler;
+import net.zeppelin.reportplus.player.ReportPlayer;
+import net.zeppelin.reportplus.reports.Report;
+import net.zeppelin.reportplus.reports.ReportHandler;
+import net.zeppelin.reportplus.utils.InventoryHandler;
 import net.zeppelin.reportplus.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,14 +19,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import net.zeppelin.reportplus.player.PlayerHandler;
-import net.zeppelin.reportplus.player.ReportPlayer;
-import net.zeppelin.reportplus.reports.Report;
-import net.zeppelin.reportplus.reports.ReportHandler;
-import net.zeppelin.reportplus.utils.InventoryHandler;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 {
@@ -91,6 +90,14 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 			String reporterIdString = reportsConfig.getString(counter + ".reporter");
 			String targetIdString = reportsConfig.getString(counter + ".target");
 			String reason = reportsConfig.getString(counter + ".reason");
+			Vector3f location = null;
+			if (reportsConfig.getConfigurationSection(counter + ".location") != null)
+            {
+                float x = reportsConfig.getInt(counter + ".location.x");
+                float y = reportsConfig.getInt(counter + ".location.y");
+                float z = reportsConfig.getInt(counter + ".location.z");
+                location = new Vector3f(x, y, z);
+            }
 
 			if (reporterIdString == null || targetIdString == null || reason == null) break;
 
@@ -100,7 +107,7 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 			ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
 			ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
 
-			Report report = new Report(reportPlayer, targetPlayer, reason);
+			Report report = new Report(reportPlayer, targetPlayer, reason, location);
 			reportHandler.addActiveReport(report);
 
 			totalReportsLoaded++;
@@ -160,10 +167,20 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 				String reporter = tempReport.getReportPlayer().getUniqueId().toString();
 				String target = tempReport.getReportPlayer().getUniqueId().toString();
 				String reason = tempReport.getReason();
+				Vector3f location = tempReport.getLocation();
 
 				reportsConfig.set(counter + ".reporter", reporter);
 				reportsConfig.set(counter + ".target", target);
 				reportsConfig.set(counter + ".reason", reason);
+				if (location != null)
+                {
+                    int x = (int) tempReport.getLocation().getX();
+                    int y = (int) tempReport.getLocation().getY();
+                    int z = (int) tempReport.getLocation().getZ();
+                    reportsConfig.set(counter + ".location.x", x);
+                    reportsConfig.set(counter + ".location.y", y);
+                    reportsConfig.set(counter + ".location.z", z);
+                }
 				totalReportsSaved++;
 			} else
 			{
@@ -209,8 +226,6 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		sender.sendMessage(commands.size() + "");
-
 		for (BaseCommand baseCommand : commands)
 		{
 			if (command.getName().equalsIgnoreCase(baseCommand.getName()))

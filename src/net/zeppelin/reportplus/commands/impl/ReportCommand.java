@@ -1,5 +1,6 @@
 package net.zeppelin.reportplus.commands.impl;
 
+import net.minecraft.server.v1_14_R1.Vector3f;
 import net.zeppelin.reportplus.commands.BaseCommand;
 import net.zeppelin.reportplus.main.ReportPlusPlugin;
 import net.zeppelin.reportplus.player.PlayerHandler;
@@ -98,7 +99,10 @@ public class ReportCommand extends BaseCommand
                 }
 
                 // Create report
-                Report report = new Report(reportPlayer, targetPlayer, reason);
+                float x = (float) player.getLocation().getX();
+                float y = (float) player.getLocation().getY();
+                float z = (float) player.getLocation().getZ();
+                Report report = new Report(reportPlayer, targetPlayer, reason, new Vector3f(x, y, z));
                 reportHandler.addActiveReport(report);
                 player.sendMessage("§7You have reported §6" + target.getName() + "§7 for §6" + reason);
                 for (Player online : Bukkit.getOnlinePlayers())

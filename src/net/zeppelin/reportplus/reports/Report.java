@@ -1,5 +1,6 @@
 package net.zeppelin.reportplus.reports;
 
+import net.minecraft.server.v1_14_R1.Vector3f;
 import net.zeppelin.reportplus.player.ReportPlayer;
 
 public class Report
@@ -9,12 +10,22 @@ public class Report
 	private String reason;
 	private boolean isClaimed = false;
 	private ReportPlayer claimer;
+	private Vector3f location;
 
 	public Report(ReportPlayer reportPlayer, ReportPlayer targetPlayer, String reason)
 	{
 		this.reportPlayer = reportPlayer;
 		this.targetPlayer = targetPlayer;
 		this.reason = reason;
+		this.location = null;
+	}
+
+	public Report(ReportPlayer reportPlayer, ReportPlayer targetPlayer, String reason, Vector3f location)
+	{
+		this.reportPlayer = reportPlayer;
+		this.targetPlayer = targetPlayer;
+		this.reason = reason;
+        this.location = location;
 	}
 
 	public void claim(ReportPlayer claimer)
@@ -78,4 +89,14 @@ public class Report
 	{
 		this.claimer = claimer;
 	}
+
+    public Vector3f getLocation()
+    {
+        return location;
+    }
+
+    public void setLocation(Vector3f location)
+    {
+        this.location = location;
+    }
 }

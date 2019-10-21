@@ -2,10 +2,12 @@ package net.zeppelin.reportplus.inventories;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -53,13 +55,16 @@ public class ClickedReportInventory extends ReportInventory
 			reportInfoLore.add("");
 			reportInfoLore.add(ChatColor.RED + "This player has multiple reports against them.");
 		}
-
 		inventory.setItem(4, ItemUtils.createItem(Material.PAPER, "§aReport Info", reportInfoLore));
-		inventory.setItem(10, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§6Archive Report", Arrays.asList("§7Send this report to the archive.")));
+		inventory.setItem(10, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§6Archive Report", Collections.singletonList("§7Send this report to the archive.")));
 		inventory.setItem(12, ItemUtils.createItem(Material.EMERALD, report.isClaimed() ? "§cAlready Claimed" : "§aClaim Report", Arrays.asList("§7Claim to be the handler of the", "§7situation of this report.")));
-		inventory.setItem(14, ItemUtils.createItem(Material.REDSTONE, "§cDelete Report", Arrays.asList("§7Delete this report.")));
-		inventory.setItem(16, ItemUtils.createItem(Material.BOOK, "§6Player Options", Arrays.asList("§7List of options for the player being reported.")));
+		inventory.setItem(14, ItemUtils.createItem(Material.REDSTONE, "§cDelete Report", Collections.singletonList("§7Delete this report.")));
+		inventory.setItem(16, ItemUtils.createItem(Material.BOOK, "§6Player Options", Collections.singletonList("§7List of options for the player being reported.")));
 		inventory.setItem(18, ItemUtils.createItem(Material.ARROW, "§cBack", null));
+		if (report.getLocation() != null)
+            inventory.setItem(22, ItemUtils.createItem(Material.COMPASS, "§6Teleport", Arrays.asList("§7Teleport to the location the report", "§7was created.")));
+		else
+		    inventory.setItem(22, ItemUtils.createItem(Material.COMPASS, "§cTeleport", Collections.singletonList("§cNo location found for this report.")));
 	}
 
 	@Override
@@ -70,6 +75,7 @@ public class ClickedReportInventory extends ReportInventory
 		Player player = (Player) event.getWhoClicked();
 		ReportPlayer reportPlayer = playerHandler.getReportPlayerFromId(player.getUniqueId());
 		int slot = event.getSlot();
+		player.sendMessage("Slot: " + slot);
 		
 		if (slot == 14)
 		{
@@ -138,6 +144,17 @@ public class ClickedReportInventory extends ReportInventory
 		{
 			inventoryHandler.getReportListInventory().openInventory(player, ReportListInventory.ACTIVE_REPORTS);
 		}
+		else if (slot == 22)
+        {
+            if (report.getLocation() != null)
+            {
+                float x = report.getLocation().getX();
+                float y = report.getLocation().getY();
+                float z = report.getLocation().getZ();
+                player.teleport(new Location(player.getWorld(), x, y, z));
+                player.sendMessage(ChatColor.GRAY + "You have been teleported to the location the report was created.");
+            }
+        }
 	}
 	
 	public void openInventoryFromReport(Player player, Report report)
