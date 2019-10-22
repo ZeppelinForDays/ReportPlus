@@ -62,10 +62,12 @@ public class ReportListInventory extends ReportInventory
             Report tempReport = reports.get(i);
             String reporterName = tempReport.getReportPlayer().getName();
             String targetPlayerName = tempReport.getTargetPlayer().getName();
-
+	    
+	    String[] reason = tempReport.getReason().split("(?<=\\G.{15})");
             List<String> lore = new ArrayList<String>();
             lore.add("§6Reported By: §7" + reporterName);
-            lore.add("§6Reason: §7" + tempReport.getReason());
+            lore.add("§6Reason: §7" + reaason[0]);
+	    lore.addAll(Arrays.copyOfRange(reason, 1, reason.length));
             if (type == ACTIVE_REPORTS)
             {
                 if (tempReport.isClaimed())
