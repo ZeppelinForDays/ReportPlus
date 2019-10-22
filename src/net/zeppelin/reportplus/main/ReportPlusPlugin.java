@@ -76,9 +76,9 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 		this.archiveConfig = YamlConfiguration.loadConfiguration(archiveFile);
 
 		this.getConfig().options().copyDefaults(true);
+		this.saveConfig();
 		LIMIT_REPORTS = getConfig().getBoolean("limitReports");
 		REPORT_LIMIT = getConfig().getInt("reportLimit");
-		this.saveConfig();
 
 		// Load reports from configuration file.
 		long startTime = System.currentTimeMillis();
@@ -91,12 +91,15 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 			String targetIdString = reportsConfig.getString(counter + ".target");
 			String reason = reportsConfig.getString(counter + ".reason");
 			Vector3f location = null;
+			String worldName = null;
 			if (reportsConfig.getConfigurationSection(counter + ".location") != null)
             {
                 float x = reportsConfig.getInt(counter + ".location.x");
                 float y = reportsConfig.getInt(counter + ".location.y");
                 float z = reportsConfig.getInt(counter + ".location.z");
                 location = new Vector3f(x, y, z);
+
+                worldName = reportsConfig.getString(counter + ".location.world");
             }
 
 			if (reporterIdString == null || targetIdString == null || reason == null) break;
@@ -107,7 +110,7 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 			ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
 			ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
 
-			Report report = new Report(reportPlayer, targetPlayer, reason, location);
+			Report report = new Report(reportPlayer, targetPlayer, reason, location, worldName);
 			reportHandler.addActiveReport(report);
 
 			totalReportsLoaded++;
@@ -168,6 +171,7 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 				String target = tempReport.getReportPlayer().getUniqueId().toString();
 				String reason = tempReport.getReason();
 				Vector3f location = tempReport.getLocation();
+				String worldName = tempReport.getWorldName();
 
 				reportsConfig.set(counter + ".reporter", reporter);
 				reportsConfig.set(counter + ".target", target);
@@ -180,6 +184,7 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
                     reportsConfig.set(counter + ".location.x", x);
                     reportsConfig.set(counter + ".location.y", y);
                     reportsConfig.set(counter + ".location.z", z);
+                    reportsConfig.set(counter + ".location.world", worldName);
                 }
 				totalReportsSaved++;
 			} else

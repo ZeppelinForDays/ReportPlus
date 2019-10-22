@@ -5,10 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -75,7 +72,6 @@ public class ClickedReportInventory extends ReportInventory
 		Player player = (Player) event.getWhoClicked();
 		ReportPlayer reportPlayer = playerHandler.getReportPlayerFromId(player.getUniqueId());
 		int slot = event.getSlot();
-		player.sendMessage("Slot: " + slot);
 		
 		if (slot == 14)
 		{
@@ -151,7 +147,8 @@ public class ClickedReportInventory extends ReportInventory
                 float x = report.getLocation().getX();
                 float y = report.getLocation().getY();
                 float z = report.getLocation().getZ();
-                player.teleport(new Location(player.getWorld(), x, y, z));
+				World world = Bukkit.getWorld(report.getWorldName());
+                player.teleport(new Location(world, x, y, z));
                 player.sendMessage(ChatColor.GRAY + "You have been teleported to the location the report was created.");
             }
         }

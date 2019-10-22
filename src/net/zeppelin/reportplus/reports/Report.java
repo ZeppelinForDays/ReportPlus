@@ -11,6 +11,7 @@ public class Report
 	private boolean isClaimed = false;
 	private ReportPlayer claimer;
 	private Vector3f location;
+	private String worldName;
 
 	public Report(ReportPlayer reportPlayer, ReportPlayer targetPlayer, String reason)
 	{
@@ -18,14 +19,16 @@ public class Report
 		this.targetPlayer = targetPlayer;
 		this.reason = reason;
 		this.location = null;
+		this.worldName = null;
 	}
 
-	public Report(ReportPlayer reportPlayer, ReportPlayer targetPlayer, String reason, Vector3f location)
+	public Report(ReportPlayer reportPlayer, ReportPlayer targetPlayer, String reason, Vector3f location, String worldName)
 	{
 		this.reportPlayer = reportPlayer;
 		this.targetPlayer = targetPlayer;
 		this.reason = reason;
         this.location = location;
+        this.worldName = worldName;
 	}
 
 	public void claim(ReportPlayer claimer)
@@ -99,4 +102,14 @@ public class Report
     {
         this.location = location;
     }
+
+	public String getWorldName()
+	{
+		return worldName;
+	}
+
+	public void setWorldName(String worldName)
+	{
+		this.worldName = worldName;
+	}
 }

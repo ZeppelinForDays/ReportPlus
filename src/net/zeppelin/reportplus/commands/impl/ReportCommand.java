@@ -102,7 +102,7 @@ public class ReportCommand extends BaseCommand
                 float x = (float) player.getLocation().getX();
                 float y = (float) player.getLocation().getY();
                 float z = (float) player.getLocation().getZ();
-                Report report = new Report(reportPlayer, targetPlayer, reason, new Vector3f(x, y, z));
+                Report report = new Report(reportPlayer, targetPlayer, reason, new Vector3f(x, y, z), player.getWorld().getName());
                 reportHandler.addActiveReport(report);
                 player.sendMessage("§7You have reported §6" + target.getName() + "§7 for §6" + reason);
                 for (Player online : Bukkit.getOnlinePlayers())
