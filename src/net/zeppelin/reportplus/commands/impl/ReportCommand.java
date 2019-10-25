@@ -37,8 +37,16 @@ public class ReportCommand extends BaseCommand
             sender.sendMessage(Messages.INVALID_SENDER);
             return;
         }
-
+        
         Player player = (Player) sender;
+        
+        // Checks permission
+        if (!player.hasPermission("reportplus.report") || !player.hasPermission("reportplus.reports.manage"))
+        {
+            player.sendMessage(Messages.INVALID_PERMISSION);
+            return;
+        }
+        
         ReportPlayer reportPlayer = playerHandler.getReportPlayerFromId(player.getUniqueId());
 
         if (args.length <= 0)
@@ -53,14 +61,13 @@ public class ReportCommand extends BaseCommand
             // Opens report inventory
             inventoryHandler.getMainInventory().openInventory(player);
         }
+        else if (args.length == 1)
+        {
+        	player.sendMessage(Messages.INVALID_ARGUMENTS);
+        	return;
+        }
         else if (args.length >= 2)
         {
-            // Checks permission
-            if (!player.hasPermission("reportplus.report"))
-            {
-                player.sendMessage(Messages.INVALID_PERMISSION);
-                return;
-            }
 
             // Check if player has reached the limit reports.
             if (ReportPlusPlugin.LIMIT_REPORTS)

@@ -168,7 +168,7 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 				Report tempReport = reportHandler.getActiveReports().get(counter);
 
 				String reporter = tempReport.getReportPlayer().getUniqueId().toString();
-				String target = tempReport.getReportPlayer().getUniqueId().toString();
+				String target = tempReport.getTargetPlayer().getUniqueId().toString();
 				String reason = tempReport.getReason();
 				Vector3f location = tempReport.getLocation();
 				String worldName = tempReport.getWorldName();
