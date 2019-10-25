@@ -38,7 +38,6 @@ public class ReportCommand extends BaseCommand
             return;
         }
         
-
         Player player = (Player) sender;
         
         // Checks permission
