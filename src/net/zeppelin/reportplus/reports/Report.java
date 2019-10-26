@@ -2,6 +2,7 @@ package net.zeppelin.reportplus.reports;
 
 import net.minecraft.server.v1_14_R1.Vector3f;
 import net.zeppelin.reportplus.player.ReportPlayer;
+import org.bukkit.Location;
 
 public class Report
 {
@@ -10,8 +11,7 @@ public class Report
 	private String reason;
 	private boolean isClaimed = false;
 	private ReportPlayer claimer;
-	private Vector3f location;
-	private String worldName;
+	private Location location;
 
 	public Report(ReportPlayer reportPlayer, ReportPlayer targetPlayer, String reason)
 	{
@@ -19,16 +19,14 @@ public class Report
 		this.targetPlayer = targetPlayer;
 		this.reason = reason;
 		this.location = null;
-		this.worldName = null;
 	}
 
-	public Report(ReportPlayer reportPlayer, ReportPlayer targetPlayer, String reason, Vector3f location, String worldName)
+	public Report(ReportPlayer reportPlayer, ReportPlayer targetPlayer, String reason, Location location)
 	{
 		this.reportPlayer = reportPlayer;
 		this.targetPlayer = targetPlayer;
 		this.reason = reason;
         this.location = location;
-        this.worldName = worldName;
 	}
 
 	public void claim(ReportPlayer claimer)
@@ -93,23 +91,13 @@ public class Report
 		this.claimer = claimer;
 	}
 
-    public Vector3f getLocation()
+    public Location getLocation()
     {
         return location;
     }
 
-    public void setLocation(Vector3f location)
+    public void setLocation(Location location)
     {
         this.location = location;
     }
-
-	public String getWorldName()
-	{
-		return worldName;
-	}
-
-	public void setWorldName(String worldName)
-	{
-		this.worldName = worldName;
-	}
 }

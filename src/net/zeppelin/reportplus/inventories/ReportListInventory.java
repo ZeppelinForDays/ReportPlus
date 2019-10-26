@@ -75,11 +75,11 @@ public class ReportListInventory extends ReportInventory
                     lore.add(ChatColor.GREEN + claimerName + " is handling this report.");
                 }
             }
-            ItemStack item = new ItemStack(Bukkit.getVersion().contains("1.14") ? Material.valueOf("PLAYER_HEAD") : Material.valueOf("SKULL_ITEM"));
-            if (!Bukkit.getVersion().contains("1.14"))
-            {
+            ItemStack item;
+            if (!Bukkit.getVersion().contains("1.14") && !Bukkit.getVersion().contains("1.13"))
                 item = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (byte) SkullType.PLAYER.ordinal());
-            }
+            else
+                item = new ItemStack(Material.valueOf("PLAYER_HEAD"));
             SkullMeta skullMeta = (SkullMeta) item.getItemMeta();
             skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(tempReport.getTargetPlayer().getUniqueId()));
             item.setItemMeta(skullMeta);

@@ -1,8 +1,9 @@
 package net.zeppelin.reportplus.inventories;
 
-import java.util.Arrays;
-import java.util.Collections;
-
+import net.zeppelin.reportplus.reports.ReportHandler;
+import net.zeppelin.reportplus.utils.InventoryHandler;
+import net.zeppelin.reportplus.utils.ItemUtils;
+import net.zeppelin.reportplus.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,10 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import net.zeppelin.reportplus.reports.ReportHandler;
-import net.zeppelin.reportplus.utils.InventoryHandler;
-import net.zeppelin.reportplus.utils.ItemUtils;
-import net.zeppelin.reportplus.utils.Messages;
+import java.util.Collections;
 
 @SuppressWarnings("deprecation")
 public class MainInventory extends ReportInventory
@@ -36,11 +34,11 @@ public class MainInventory extends ReportInventory
 		
 		// Load inventory
 		inventory.setItem(12, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§6Archived Reports", Collections.singletonList("§7List of all archived reports.")));
-		ItemStack item = new ItemStack(Bukkit.getVersion().contains("1.14") ? Material.valueOf("PLAYER_HEAD") : Material.valueOf("SKULL_ITEM"));
-		if (!Bukkit.getVersion().contains("1.14"))
-		{
+		ItemStack item;
+		if (!Bukkit.getVersion().contains("1.14") && !Bukkit.getVersion().contains("1.13"))
 			item = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (byte) SkullType.PLAYER.ordinal());
-		}
+		else
+			item = new ItemStack(Material.valueOf("PLAYER_HEAD"));
 		inventory.setItem(14, ItemUtils.createItem(item, "§aActive Reports", Collections.singletonList("§7View and manage all active reports.")));
 		inventory.setItem(18, ItemUtils.createItem(Material.ARROW, ChatColor.RED + "Exit", null));
 	}

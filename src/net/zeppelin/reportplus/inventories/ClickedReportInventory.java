@@ -144,11 +144,7 @@ public class ClickedReportInventory extends ReportInventory
         {
             if (report.getLocation() != null)
             {
-                float x = report.getLocation().getX();
-                float y = report.getLocation().getY();
-                float z = report.getLocation().getZ();
-				World world = Bukkit.getWorld(report.getWorldName());
-                player.teleport(new Location(world, x, y, z));
+                player.teleport(report.getLocation());
                 player.sendMessage(ChatColor.GRAY + "You have been teleported to the location the report was created.");
             }
         }
