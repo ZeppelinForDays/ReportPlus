@@ -13,3 +13,20 @@ commands:
     description: Removes all reports from a target player.
   reports:
     description: View all active reports.
+permissions:
+  reportplus.report:
+    description: Allows a player to report another player.
+  reportplus.reports.manage:
+    description: Allows a player to open the report manager menu.
+  reportplus.reports.view:
+    description: Allows a player to view reports.
+  reportplus.reports.remove:
+    description: Allows a player to remove reports.
+  reportplus.reports.claim:
+    description: Allows a player to claim/take over the situation of the report.
+  reportplus.reports.archive:
+    description: Allows a player to send a report to the archive.
+  reportplus.players.manage:
+    description: Allows a player to manage player options.
+  reportplus.notify.receive:
+    description: Allows a player to receive notifications on reports that have been created.
