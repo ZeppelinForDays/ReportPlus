@@ -20,13 +20,14 @@ public class ReportCommand extends BaseCommand
     private ReportHandler reportHandler;
     private InventoryHandler inventoryHandler;
 
-    public ReportCommand(PlayerHandler playerHandler, ReportHandler reportHandler, InventoryHandler inventoryHandler)
+    public ReportCommand(PlayerHandler playerHandler, ReportHandler reportHandler, InventoryHandler inventoryHandler, ReportPlusPlugin plugin)
     {
         super("report", null);
         this.playerHandler = playerHandler;
         this.reportHandler = reportHandler;
         this.inventoryHandler = inventoryHandler;
         addSubCommand(new RemoveAllSubCommand(reportHandler));
+        addSubCommand(new ReloadSubCommand(plugin));
     }
 
     @Override
@@ -39,15 +40,6 @@ public class ReportCommand extends BaseCommand
         }
         
         Player player = (Player) sender;
-        
-        // Checks permission
-        if (!player.hasPermission("reportplus.report") || !player.hasPermission("reportplus.reports.manage"))
-        {
-            player.sendMessage(Messages.INVALID_PERMISSION);
-            return;
-        }
-        
-        ReportPlayer reportPlayer = playerHandler.getReportPlayerFromId(player.getUniqueId());
 
         if (args.length <= 0)
         {
@@ -61,13 +53,14 @@ public class ReportCommand extends BaseCommand
             // Opens report inventory
             inventoryHandler.getMainInventory().openInventory(player);
         }
-        else if (args.length == 1)
-        {
-        	player.sendMessage(Messages.INVALID_ARGUMENTS);
-        	return;
-        }
         else if (args.length >= 2)
         {
+            // Checks permission
+            if (!player.hasPermission("reportplus.report"))
+            {
+                player.sendMessage(Messages.INVALID_PERMISSION);
+                return;
+            }
 
             // Check if player has reached the limit reports.
             if (ReportPlusPlugin.LIMIT_REPORTS)
@@ -78,6 +71,7 @@ public class ReportCommand extends BaseCommand
                     return;
                 }
             }
+            ReportPlayer reportPlayer = playerHandler.getReportPlayerFromId(player.getUniqueId());
 
             // Continue reporting command
             Player target = Bukkit.getPlayer(args[0]);

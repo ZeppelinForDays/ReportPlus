@@ -15,7 +15,7 @@ public class OpenReportsCommand extends BaseCommand
 
     public OpenReportsCommand(ReportHandler reportHandler, InventoryHandler inventoryHandler)
     {
-        super("reports", "reportplus.reports.view");
+        super("reports", "reportplus.reports.manage");
         this.reportHandler = reportHandler;
         this.inventoryHandler = inventoryHandler;
     }

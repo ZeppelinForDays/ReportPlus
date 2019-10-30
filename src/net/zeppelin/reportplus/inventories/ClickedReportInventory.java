@@ -112,7 +112,6 @@ public class ClickedReportInventory extends ReportInventory
 			if (!player.hasPermission("reportplus.reports.archive"))
 			{
 				player.sendMessage(Messages.INVALID_PERMISSION);
-				player.closeInventory();
 				return;
 			}
 
@@ -130,7 +129,6 @@ public class ClickedReportInventory extends ReportInventory
 			if (!player.hasPermission("reportplus.players.manage"))
 			{
 				player.sendMessage(Messages.INVALID_PERMISSION);
-				player.closeInventory();
 				return;
 			}
 			
@@ -142,6 +140,13 @@ public class ClickedReportInventory extends ReportInventory
 		}
 		else if (slot == 22)
         {
+        	// Checks permission
+			if (!player.hasPermission("reportplus.reports.tp"))
+			{
+				player.sendMessage(Messages.INVALID_PERMISSION);
+				return;
+			}
+
             if (report.getLocation() != null)
             {
                 player.teleport(report.getLocation());

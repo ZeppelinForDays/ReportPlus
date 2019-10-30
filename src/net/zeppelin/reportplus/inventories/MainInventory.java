@@ -18,7 +18,6 @@ import java.util.Collections;
 public class MainInventory extends ReportInventory
 {
 	private ReportHandler reportHandler;
-	private Player player;
 	
 	public MainInventory(InventoryHandler inventoryHandler, int id, ReportHandler reportHandler)
 	{
@@ -46,16 +45,8 @@ public class MainInventory extends ReportInventory
 	@Override
 	public void onInventoryClickEvent(InventoryClickEvent event)
 	{
-		player = (Player) event.getWhoClicked();
+		Player player = (Player) event.getWhoClicked();
 		int slot = event.getSlot();
-		
-		// Check permission
-		if (!player.hasPermission("reportplus.reports.view"))
-		{
-			player.sendMessage(Messages.INVALID_PERMISSION);
-			player.closeInventory();
-			return;
-		}
 
 		if (slot == 14)
 		{

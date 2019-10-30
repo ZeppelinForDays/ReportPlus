@@ -1,3 +1,24 @@
 # Set to true if you want players to have a limit to how many reports they can make.
 limitReports: false
 reportLimit: 5
+messages:
+  # Displayed when player doesn't have permission.
+  invalid-permission: '&cYou don''t have permission to do that.'
+  # Displayed if the console has used a command that it can't.
+  invalid-sender: '&cYou must be a player to use this command.'
+  # Displayed when target player doesn't have any reports against them.
+  invalid-target-report: '&cThat player does not have any active reports against them.'
+  # Displayed if a player tries to claim a report that is already claimed.
+  report-claimed: '&cThis report is already claimed.'
+  # Displayed if trying to access reports when there isn't any.
+  currently-no-reports: '&cThere are currently no reports available.'
+  # Displayed to the command sender if sender is trying to report themselves.
+  report-self: '&cYou cannot report yourself.'
+  # Displayed to the target player when they have been kicked.
+  player-kicked: '&cYou have been kicked from this server.'
+  # Displayed to the target player when they have been banned.
+  player-banned: '&cYou have been banned from this server.'
+  # Displayed to the player if they have exceeded the maximum number of reports.
+  report-limit: '&cYou have reached the limit of reports you can create.'
+  # Displayed to the command sender if arguments don't meet the requirement.
+  invalid-arguments: '&cInvalid arguments.'

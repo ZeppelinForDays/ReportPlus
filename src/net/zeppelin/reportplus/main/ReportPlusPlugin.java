@@ -1,6 +1,5 @@
 package net.zeppelin.reportplus.main;
 
-import net.minecraft.server.v1_14_R1.Vector3f;
 import net.zeppelin.reportplus.commands.BaseCommand;
 import net.zeppelin.reportplus.commands.SubCommand;
 import net.zeppelin.reportplus.commands.impl.OpenReportsCommand;
@@ -53,7 +52,6 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 	 *
 	 * - reportplus.report: Allows a player to report someone.
 	 * - reportplus.reports.manage: Allows a player to open the report manager menu.
-	 * - reportplus.reports.view: Allows a player to view reports.
 	 * - reportplus.reports.remove: Allows a player to remove all reports from a target player.
 	 * - reportplus.reports.claim: Allows a player to claim a report.
 	 * - reportplus.reports.archive: Allows a player to archive a report.
@@ -76,72 +74,12 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 		this.reportsConfig = YamlConfiguration.loadConfiguration(reportsFile);
 		this.archiveConfig = YamlConfiguration.loadConfiguration(archiveFile);
 
-		this.getConfig().options().copyDefaults(true);
-		this.saveConfig();
+        this.saveConfig();
 		LIMIT_REPORTS = getConfig().getBoolean("limitReports");
 		REPORT_LIMIT = getConfig().getInt("reportLimit");
+		Messages.loadMessages(getConfig());
 
-		// Load reports from configuration file.
-		long startTime = System.currentTimeMillis();
-		// Load active reports
-		int totalReportsLoaded = 0;
-		int counter = 0;
-		while (reportsConfig.getString(String.valueOf(counter)) != null)
-		{
-			String reporterIdString = reportsConfig.getString(counter + ".reporter");
-			String targetIdString = reportsConfig.getString(counter + ".target");
-			String reason = reportsConfig.getString(counter + ".reason");
-			Location location = null;
-			String worldName = reportsConfig.getString(counter + ".location.world");
-
-			if (reportsConfig.getConfigurationSection(counter + ".location") != null && worldName != null)
-            {
-                float x = reportsConfig.getInt(counter + ".location.x");
-                float y = reportsConfig.getInt(counter + ".location.y");
-                float z = reportsConfig.getInt(counter + ".location.z");
-
-                location = new Location(Bukkit.getWorld(worldName), x, y, z);
-            }
-
-			if (reporterIdString == null || targetIdString == null || reason == null) break;
-
-			OfflinePlayer reporter = Bukkit.getOfflinePlayer(UUID.fromString(reporterIdString));
-			OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(targetIdString));
-
-			ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
-			ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
-
-			Report report = new Report(reportPlayer, targetPlayer, reason, location);
-			reportHandler.addActiveReport(report);
-
-			totalReportsLoaded++;
-			counter++;
-		}
-
-		// Load archived reports
-		counter = 0;
-		while (archiveConfig.getString(String.valueOf(counter)) != null)
-		{
-			String reporterIdString = archiveConfig.getString(counter + ".reporter");
-			String targetIdString = archiveConfig.getString(counter + ".target");
-			String reason = archiveConfig.getString(counter + ".reason");
-
-			if (reporterIdString == null || targetIdString == null || reason == null) break;
-
-			OfflinePlayer reporter = Bukkit.getOfflinePlayer(UUID.fromString(reporterIdString));
-			OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(targetIdString));
-
-			ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
-			ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
-
-			Report report = new Report(reportPlayer, targetPlayer, reason);
-			reportHandler.addArchivedReport(report);
-
-			totalReportsLoaded++;
-			counter++;
-		}
-		int elapsedTime = (int) (System.currentTimeMillis() - startTime);
-		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "" + totalReportsLoaded + " report(s) has been loaded successfully, took " + elapsedTime + "ms.");
+		loadReportsFromConfig();
 
 		// Register listeners
 		getServer().getPluginManager().registerEvents(playerHandler, this);
@@ -149,83 +87,13 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 
 		// Commands
 		registerCommand(new OpenReportsCommand(reportHandler, inventoryHandler));
-		registerCommand(new ReportCommand(playerHandler, reportHandler, inventoryHandler));
+		registerCommand(new ReportCommand(playerHandler, reportHandler, inventoryHandler, this));
 	}
 
 	@Override
 	public void onDisable()
 	{
-		/*
-		 * Save reports to configuration file.
-		 */
-		long startTime = System.currentTimeMillis();
-		// Save reportsConfig
-		int totalReportsSaved = 0;
-		int counter = 0;
-		while (true)
-		{
-			if (counter < reportHandler.getActiveReports().size())
-			{
-				Report tempReport = reportHandler.getActiveReports().get(counter);
-
-				String reporter = tempReport.getReportPlayer().getUniqueId().toString();
-				String target = tempReport.getTargetPlayer().getUniqueId().toString();
-				String reason = tempReport.getReason();
-				Location location = tempReport.getLocation();
-
-				reportsConfig.set(counter + ".reporter", reporter);
-				reportsConfig.set(counter + ".target", target);
-				reportsConfig.set(counter + ".reason", reason);
-				if (location != null)
-                {
-                    int x = (int) tempReport.getLocation().getX();
-                    int y = (int) tempReport.getLocation().getY();
-                    int z = (int) tempReport.getLocation().getZ();
-                    reportsConfig.set(counter + ".location.x", x);
-                    reportsConfig.set(counter + ".location.y", y);
-                    reportsConfig.set(counter + ".location.z", z);
-                    reportsConfig.set(counter + ".location.world", location.getWorld().getName());
-                }
-				totalReportsSaved++;
-			} else
-			{
-				if (reportsConfig.getString(String.valueOf(counter)) != null)
-				{
-					reportsConfig.set(String.valueOf(counter), null);
-				} else break;
-			}
-			counter++;
-		}
-		saveReportsConfig();
-
-		// Save archiveConfig
-		counter = 0;
-		while (true)
-		{
-			if (counter < reportHandler.getArchivedReports().size())
-			{
-				Report tempReport = reportHandler.getArchivedReports().get(counter);
-
-				String reporter = tempReport.getReportPlayer().getUniqueId().toString();
-				String target = tempReport.getReportPlayer().getUniqueId().toString();
-				String reason = tempReport.getReason();
-
-				archiveConfig.set(counter + ".reporter", reporter);
-				archiveConfig.set(counter + ".target", target);
-				archiveConfig.set(counter + ".reason", reason);
-				totalReportsSaved++;
-			} else
-			{
-				if (archiveConfig.getString(String.valueOf(counter)) != null)
-				{
-					archiveConfig.set(String.valueOf(counter), null);
-				} else break;
-			}
-			counter++;
-		}
-		saveArchiveConfig();
-		int elapsedTime = (int) (System.currentTimeMillis() - startTime);
-		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "" + totalReportsSaved + " report(s) has been saved successfully, took " + elapsedTime + "ms.");
+		saveReportsToConfig();
 	}
 
 	@Override
@@ -270,7 +138,147 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 		return false;
 	}
 
-	public void saveReportsConfig()
+	public void saveReportsToConfig()
+	{
+		/*
+		 * Save reports to configuration file.
+		 */
+		long startTime = System.currentTimeMillis();
+		// Save reportsConfig
+		int totalReportsSaved = 0;
+		int counter = 0;
+		while (true)
+		{
+			if (counter < reportHandler.getActiveReports().size())
+			{
+				Report tempReport = reportHandler.getActiveReports().get(counter);
+
+				String reporter = tempReport.getReportPlayer().getUniqueId().toString();
+				String target = tempReport.getTargetPlayer().getUniqueId().toString();
+				String reason = tempReport.getReason();
+				Location location = tempReport.getLocation();
+
+				reportsConfig.set(counter + ".reporter", reporter);
+				reportsConfig.set(counter + ".target", target);
+				reportsConfig.set(counter + ".reason", reason);
+				if (location != null)
+				{
+					int x = (int) tempReport.getLocation().getX();
+					int y = (int) tempReport.getLocation().getY();
+					int z = (int) tempReport.getLocation().getZ();
+					reportsConfig.set(counter + ".location.x", x);
+					reportsConfig.set(counter + ".location.y", y);
+					reportsConfig.set(counter + ".location.z", z);
+					reportsConfig.set(counter + ".location.world", location.getWorld().getName());
+				}
+				totalReportsSaved++;
+			} else
+			{
+				if (reportsConfig.getString(String.valueOf(counter)) != null)
+				{
+					reportsConfig.set(String.valueOf(counter), null);
+				} else break;
+			}
+			counter++;
+		}
+		saveReportsConfig();
+
+		// Save archiveConfig
+		counter = 0;
+		while (true)
+		{
+			if (counter < reportHandler.getArchivedReports().size())
+			{
+				Report tempReport = reportHandler.getArchivedReports().get(counter);
+
+				String reporter = tempReport.getReportPlayer().getUniqueId().toString();
+				String target = tempReport.getReportPlayer().getUniqueId().toString();
+				String reason = tempReport.getReason();
+
+				archiveConfig.set(counter + ".reporter", reporter);
+				archiveConfig.set(counter + ".target", target);
+				archiveConfig.set(counter + ".reason", reason);
+				totalReportsSaved++;
+			} else
+			{
+				if (archiveConfig.getString(String.valueOf(counter)) != null)
+				{
+					archiveConfig.set(String.valueOf(counter), null);
+				} else break;
+			}
+			counter++;
+		}
+		saveArchiveConfig();
+		int elapsedTime = (int) (System.currentTimeMillis() - startTime);
+		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "" + totalReportsSaved + " report(s) has been saved successfully, took " + elapsedTime + "ms.");
+	}
+
+	public void loadReportsFromConfig()
+	{
+		// Load reports from configuration file.
+		long startTime = System.currentTimeMillis();
+		// Load active reports
+		int totalReportsLoaded = 0;
+		int counter = 0;
+		while (reportsConfig.getString(String.valueOf(counter)) != null)
+		{
+			String reporterIdString = reportsConfig.getString(counter + ".reporter");
+			String targetIdString = reportsConfig.getString(counter + ".target");
+			String reason = reportsConfig.getString(counter + ".reason");
+			Location location = null;
+			String worldName = reportsConfig.getString(counter + ".location.world");
+
+			if (reportsConfig.getConfigurationSection(counter + ".location") != null && worldName != null)
+			{
+				float x = reportsConfig.getInt(counter + ".location.x");
+				float y = reportsConfig.getInt(counter + ".location.y");
+				float z = reportsConfig.getInt(counter + ".location.z");
+
+				location = new Location(Bukkit.getWorld(worldName), x, y, z);
+			}
+
+			if (reporterIdString == null || targetIdString == null || reason == null) break;
+
+			OfflinePlayer reporter = Bukkit.getOfflinePlayer(UUID.fromString(reporterIdString));
+			OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(targetIdString));
+
+			ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
+			ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
+
+			Report report = new Report(reportPlayer, targetPlayer, reason, location);
+			reportHandler.addActiveReport(report);
+
+			totalReportsLoaded++;
+			counter++;
+		}
+
+		// Load archived reports
+		counter = 0;
+		while (archiveConfig.getString(String.valueOf(counter)) != null)
+		{
+			String reporterIdString = archiveConfig.getString(counter + ".reporter");
+			String targetIdString = archiveConfig.getString(counter + ".target");
+			String reason = archiveConfig.getString(counter + ".reason");
+
+			if (reporterIdString == null || targetIdString == null || reason == null) break;
+
+			OfflinePlayer reporter = Bukkit.getOfflinePlayer(UUID.fromString(reporterIdString));
+			OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(targetIdString));
+
+			ReportPlayer reportPlayer = new ReportPlayer(reporter.getUniqueId(), reporter.getName());
+			ReportPlayer targetPlayer = new ReportPlayer(target.getUniqueId(), target.getName());
+
+			Report report = new Report(reportPlayer, targetPlayer, reason);
+			reportHandler.addArchivedReport(report);
+
+			totalReportsLoaded++;
+			counter++;
+		}
+		int elapsedTime = (int) (System.currentTimeMillis() - startTime);
+		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "" + totalReportsLoaded + " report(s) has been loaded successfully, took " + elapsedTime + "ms.");
+	}
+
+	private void saveReportsConfig()
 	{
 		try
 		{
@@ -281,7 +289,7 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 		}
 	}
 
-	public void saveArchiveConfig()
+	private void saveArchiveConfig()
 	{
 		try
 		{
@@ -292,9 +300,15 @@ public class ReportPlusPlugin extends JavaPlugin implements CommandExecutor
 		}
 	}
 
-	public void registerCommand(BaseCommand command)
+	private void registerCommand(BaseCommand command)
 	{
 		this.commands.add(command);
 		getCommand(command.getName()).setExecutor(this);
+	}
+
+	public void reloadPlugin()
+	{
+		this.reloadConfig();
+		Messages.loadMessages(getConfig());
 	}
 }

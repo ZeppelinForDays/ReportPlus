@@ -1,16 +1,18 @@
 main: net.zeppelin.reportplus.main.ReportPlusPlugin
 name: ReportPlus
-version: "1.2.12"
+version: "1.3.1"
 api-version: "1.13"
 description: "Reporting system with GUI capability."
-author: ZeppelinForDays
+authors: [ZeppelinForDays]
 commands:
   report:
     description: Opens the main GUI.
-  report <player> <reason>:
+  report <player> <reason...>:
     description: Reports the given player.
   report removeall <player>:
     description: Removes all reports from a target player.
+  report reload:
+    description: Reloads the configuration file.
   reports:
     description: View all active reports.
 permissions:
@@ -18,15 +20,17 @@ permissions:
     description: Allows a player to report another player.
   reportplus.reports.manage:
     description: Allows a player to open the report manager menu.
-  reportplus.reports.view:
-    description: Allows a player to view reports.
   reportplus.reports.remove:
     description: Allows a player to remove reports.
   reportplus.reports.claim:
     description: Allows a player to claim/take over the situation of the report.
   reportplus.reports.archive:
     description: Allows a player to send a report to the archive.
+  reportplus.reports.tp:
+    description: Allows a player to teleport to the location of the report.
   reportplus.players.manage:
     description: Allows a player to manage player options.
+  reportplus.reload:
+    description: Allows a player to reload the configuration file.
   reportplus.notify.receive:
     description: Allows a player to receive notifications on reports that have been created.
