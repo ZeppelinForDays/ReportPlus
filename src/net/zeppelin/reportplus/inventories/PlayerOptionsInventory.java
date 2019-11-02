@@ -4,6 +4,7 @@ import net.zeppelin.reportplus.reports.Report;
 import net.zeppelin.reportplus.utils.InventoryHandler;
 import net.zeppelin.reportplus.utils.ItemUtils;
 import net.zeppelin.reportplus.utils.Messages;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,7 +43,7 @@ public class PlayerOptionsInventory extends ReportInventory
 
 		if (slot == 11) // Ban Player
 		{
-			Bukkit.banIP(target.getAddress().toString());
+			Bukkit.getBanList(BanList.Type.IP).addBan(target.getAddress().getHostName(), Messages.PLAYER_BANNED, null, null);
 			target.kickPlayer(Messages.PLAYER_BANNED);
 			player.closeInventory();
 			player.sendMessage("§7You banned §6" + target.getName() + "§7 from the server.");

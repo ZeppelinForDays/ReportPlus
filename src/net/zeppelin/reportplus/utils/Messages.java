@@ -15,6 +15,7 @@ public class Messages
 	public static String PLAYER_BANNED = ChatColor.RED + "You have been banned from this server.";
 	public static String REPORT_LIMIT = ChatColor.RED + "You have reached the limit of reports you can create.";
 	public static String INVALID_ARGUMENTS = ChatColor.RED + "Invalid arguments.";
+	public static String PLAYER_EXEMPT = ChatColor.RED + "You cannot report this player.";
 
 	public static void loadMessages(FileConfiguration config)
 	{
@@ -30,6 +31,7 @@ public class Messages
 		String playerBanned = config.getString(location + "player-banned");
 		String reportLimit = config.getString(location + "report-limit");
 		String invalidArguments = config.getString(location + "invalid-arguments");
+		String playerExempt = config.getString(location + "playerExempt");
 
 		if (invalidPermission != null)
 			INVALID_PERMISSION = ChatColor.translateAlternateColorCodes('&', invalidPermission);
@@ -51,5 +53,7 @@ public class Messages
 			REPORT_LIMIT = ChatColor.translateAlternateColorCodes('&', reportLimit);
 		if (invalidArguments != null)
 			INVALID_ARGUMENTS = ChatColor.translateAlternateColorCodes('&', invalidArguments);
+		if (playerExempt != null)
+			PLAYER_EXEMPT = ChatColor.translateAlternateColorCodes('&', playerExempt);
 	}
 }

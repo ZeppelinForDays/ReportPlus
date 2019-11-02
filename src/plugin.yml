@@ -1,6 +1,6 @@
 main: net.zeppelin.reportplus.main.ReportPlusPlugin
 name: ReportPlus
-version: "1.3.1"
+version: "1.3.2"
 api-version: "1.13"
 description: "Reporting system with GUI capability."
 authors: [ZeppelinForDays]
@@ -28,6 +28,8 @@ permissions:
     description: Allows a player to send a report to the archive.
   reportplus.reports.tp:
     description: Allows a player to teleport to the location of the report.
+  reportplus.reports.exempt:
+    description: Allows a player to not be reported.
   reportplus.players.manage:
     description: Allows a player to manage player options.
   reportplus.reload:

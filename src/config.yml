@@ -22,3 +22,5 @@ messages:
   report-limit: '&cYou have reached the limit of reports you can create.'
   # Displayed to the command sender if arguments don't meet the requirement.
   invalid-arguments: '&cInvalid arguments.'
+  # Displayed when reporting a player that has permission: reportplus.reports.exempt
+  playerExempt: '&cYou cannot report this player.'

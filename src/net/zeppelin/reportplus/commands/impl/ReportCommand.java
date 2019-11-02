@@ -78,6 +78,12 @@ public class ReportCommand extends BaseCommand
 
             if (target != null)
             {
+                if (target.hasPermission("reportplus.reports.exempt"))
+                {
+                    player.sendMessage(Messages.PLAYER_EXEMPT);
+                    return;
+                }
+
                 ReportPlayer targetPlayer = playerHandler.getReportPlayerFromId(target.getUniqueId());
                 String reason = "";
 
