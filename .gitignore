@@ -1,6 +1,7 @@
 
 .classpath
 *.xml
+*.icls
 .project
 *.prefs
 *.class
