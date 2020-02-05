@@ -5,10 +5,8 @@ import net.zeppelin.reportplus.reports.Report;
 import net.zeppelin.reportplus.reports.ReportHandler;
 import net.zeppelin.reportplus.utils.Messages;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class RemoveAllSubCommand extends SubCommand
 {

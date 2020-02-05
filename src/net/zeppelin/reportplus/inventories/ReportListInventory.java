@@ -1,9 +1,10 @@
 package net.zeppelin.reportplus.inventories;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.zeppelin.reportplus.player.PlayerHandler;
+import net.zeppelin.reportplus.reports.Report;
+import net.zeppelin.reportplus.reports.ReportHandler;
+import net.zeppelin.reportplus.utils.InventoryHandler;
+import net.zeppelin.reportplus.utils.ItemUtils;
+import net.zeppelin.reportplus.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,11 +14,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import net.zeppelin.reportplus.reports.Report;
-import net.zeppelin.reportplus.reports.ReportHandler;
-import net.zeppelin.reportplus.utils.InventoryHandler;
-import net.zeppelin.reportplus.utils.ItemUtils;
-import net.zeppelin.reportplus.utils.Messages;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class ReportListInventory extends ReportInventory
@@ -66,6 +64,7 @@ public class ReportListInventory extends ReportInventory
             List<String> lore = new ArrayList<String>();
             lore.add("§6Reported By: §7" + reporterName);
             lore.add("§6Reason: §7" + tempReport.getReason());
+
             if (type == ACTIVE_REPORTS)
             {
                 if (tempReport.isClaimed())
@@ -76,7 +75,7 @@ public class ReportListInventory extends ReportInventory
                 }
             }
             ItemStack item;
-            if (!Bukkit.getVersion().contains("1.14") && !Bukkit.getVersion().contains("1.13"))
+            if (!Bukkit.getVersion().contains("1.15") && !Bukkit.getVersion().contains("1.14") && !Bukkit.getVersion().contains("1.13"))
                 item = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (byte) SkullType.PLAYER.ordinal());
             else
                 item = new ItemStack(Material.valueOf("PLAYER_HEAD"));
