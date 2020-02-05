@@ -10,3 +10,4 @@ NextReleaseNotes.txt
 ReportPlusPlugin.iml
 bin/config.yml
 bin/META-INF/ReportPlusPlugin.kotlin_module
+/colors/
