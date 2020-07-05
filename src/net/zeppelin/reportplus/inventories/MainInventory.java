@@ -34,7 +34,7 @@ public class MainInventory extends ReportInventory
 		// Load inventory
 		inventory.setItem(12, ItemUtils.createItem(Material.ENCHANTED_BOOK, "§6Archived Reports", Collections.singletonList("§7List of all archived reports.")));
 		ItemStack item;
-		if (!Bukkit.getVersion().contains("1.15") && !Bukkit.getVersion().contains("1.14") && !Bukkit.getVersion().contains("1.13"))
+		if (!Bukkit.getVersion().contains("1.16") && !Bukkit.getVersion().contains("1.15") && !Bukkit.getVersion().contains("1.14") && !Bukkit.getVersion().contains("1.13"))
 			item = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (byte) SkullType.PLAYER.ordinal());
 		else
 			item = new ItemStack(Material.valueOf("PLAYER_HEAD"));

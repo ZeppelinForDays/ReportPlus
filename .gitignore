@@ -11,3 +11,6 @@ ReportPlusPlugin.iml
 bin/config.yml
 bin/META-INF/ReportPlusPlugin.kotlin_module
 /colors/
+/ReportPlus.iml
+out/production/ReportPlus/plugin.yml
+out/production/ReportPlus/config.yml
