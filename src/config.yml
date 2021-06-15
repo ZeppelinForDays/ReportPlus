@@ -24,3 +24,5 @@ messages:
   invalid-arguments: '&cInvalid arguments.'
   # Displayed when reporting a player that has permission: reportplus.reports.exempt
   playerExempt: '&cYou cannot report this player.'
+  # Displayed when player is trying to report someone with no reason.
+  noReason: '&cYou must state why you are reporting this player.'

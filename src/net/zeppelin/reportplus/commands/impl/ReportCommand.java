@@ -37,7 +37,7 @@ public class ReportCommand extends BaseCommand
             sender.sendMessage(Messages.INVALID_SENDER);
             return;
         }
-        
+
         Player player = (Player) sender;
 
         if (args.length <= 0)
@@ -51,8 +51,17 @@ public class ReportCommand extends BaseCommand
 
             // Opens report inventory
             inventoryHandler.getMainInventory().openInventory(player);
-        }
-        else if (args.length >= 2)
+        } else if (args.length == 1)
+        {
+            // Checks permission
+            if (!player.hasPermission("reportplus.report"))
+            {
+                player.sendMessage(Messages.INVALID_PERMISSION);
+                return;
+            }
+
+            player.sendMessage(Messages.NO_REASON);
+        } else if (args.length >= 2)
         {
             // Checks permission
             if (!player.hasPermission("reportplus.report"))
@@ -87,11 +96,11 @@ public class ReportCommand extends BaseCommand
                 String reason = "";
 
                 // Check if player is reporting themselves.
-                if (target.getUniqueId().equals(player.getUniqueId()))
-                {
-                    player.sendMessage(Messages.REPORT_SELF);
-                    return;
-                }
+//                if (target.getUniqueId().equals(player.getUniqueId()))
+//                {
+//                    player.sendMessage(Messages.REPORT_SELF);
+//                    return;
+//                }
 
                 // Convert args to a String
                 for (int i = 1; i < args.length; i++)

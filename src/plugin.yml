@@ -1,6 +1,6 @@
 main: net.zeppelin.reportplus.main.ReportPlusPlugin
 name: ReportPlus
-version: "1.3.4"
+version: "1.3.5"
 api-version: "1.13"
 description: "Reporting system with GUI capability."
 authors: [ZeppelinForDays]
