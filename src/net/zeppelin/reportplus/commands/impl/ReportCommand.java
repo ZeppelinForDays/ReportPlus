@@ -96,11 +96,11 @@ public class ReportCommand extends BaseCommand
                 String reason = "";
 
                 // Check if player is reporting themselves.
-//                if (target.getUniqueId().equals(player.getUniqueId()))
-//                {
-//                    player.sendMessage(Messages.REPORT_SELF);
-//                    return;
-//                }
+                if (target.getUniqueId().equals(player.getUniqueId()))
+                {
+                    player.sendMessage(Messages.REPORT_SELF);
+                    return;
+                }
 
                 // Convert args to a String
                 for (int i = 1; i < args.length; i++)
